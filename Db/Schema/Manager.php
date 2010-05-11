@@ -128,6 +128,11 @@ class Akrabat_Db_Schema_Manager
         }
         $class = new $classname($this->_db);
         $class->$direction();
+
+        $queries = $this->_db->getProfiler()->getQueryProfiles();
+        foreach ($queries as $query) {
+            echo '[' . $query->getElapsedSecs() . '] ' . $query->getQuery() . PHP_EOL;
+        }
         
         if($direction == 'down') {
             // current version is actually one lower than this version now

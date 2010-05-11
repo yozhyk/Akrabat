@@ -92,7 +92,17 @@ class Akrabat_Tool_DatabaseSchemaProvider extends Zend_Tool_Framework_Provider_A
     protected function _getDbAdapter()
     {
         if ((null === $this->_db)) {
-            $config = new Zend_Config_Ini(APPLICATION_PATH . '/configs/application.ini', APPLICATION_ENV);
+            $config = new Zend_Config(array(), true);
+            
+            $dir = dir(APPLICATION_PATH . '/configs');
+            while (false !== ($file = $dir->read())) {
+                if (preg_match('/(.*)\.ini/i', $file)) {
+                    $oneMoreConfig = new Zend_Config_Ini(APPLICATION_PATH . '/configs/' . $file, APPLICATION_ENV);
+                    $config = $config->merge($oneMoreConfig);
+                }
+            }
+            $dir->close();
+
             $dbConfig = $config->resources->db;
             $this->_db = Zend_Db::factory($dbConfig->adapter, $dbConfig->params);
         }
